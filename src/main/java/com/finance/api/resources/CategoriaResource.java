@@ -46,11 +46,7 @@ public class CategoriaResource {
 	public ResponseEntity<Categoria> buscarPorCodigo(@PathVariable Long codigo) {
 		Categoria categoriaRecuperada = repository.findOne(codigo);
 
-		if (categoriaRecuperada != null) {
-			return ResponseEntity.ok().body(categoriaRecuperada);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+		return categoriaRecuperada != null ? ResponseEntity.ok(categoriaRecuperada) : ResponseEntity.notFound().build();
 	}
 
 }
