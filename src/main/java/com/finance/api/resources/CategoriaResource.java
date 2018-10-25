@@ -37,12 +37,19 @@ public class CategoriaResource {
 
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")
 				.buildAndExpand(categoriaSalva.getCodigo()).toUri();
-		
+
 		return ResponseEntity.created(uri).body(categoriaSalva);
 	}
-	
-	@GetMapping("/{codigo}") 
-	public Categoria buscarPorCodigo(@PathVariable Long codigo) {
-		return repository.findOne(codigo);
+
+	@GetMapping("/{codigo}")
+	public ResponseEntity<Categoria> buscarPorCodigo(@PathVariable Long codigo) {
+		Categoria categoriaRecuperada = repository.findOne(codigo);
+
+		if (categoriaRecuperada != null) {
+			return ResponseEntity.ok().body(categoriaRecuperada);
+		} else {
+			return ResponseEntity.notFound().build();
+		}
 	}
+
 }
