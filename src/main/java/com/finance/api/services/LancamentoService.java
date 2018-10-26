@@ -3,6 +3,7 @@ package com.finance.api.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.finance.api.model.Lancamento;
@@ -16,5 +17,14 @@ public class LancamentoService {
 
 	public List<Lancamento> buscarTodos() {
 		return repository.findAll();
+	}
+
+	public Lancamento buscarPorCodigo(Long codigo) {
+		Lancamento lancamento = repository.findOne(codigo);
+
+		if (lancamento == null) {
+			throw new EmptyResultDataAccessException(1);
+		}
+		return lancamento;
 	}
 }
