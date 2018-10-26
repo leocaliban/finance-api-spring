@@ -68,6 +68,12 @@
 			<version>3.4</version>
 		</dependency>
 		
+		<!-- Segurança do Spring -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		
 		
 		<!-- Dependencia externa usada para criar o Metamodel 
 		<dependency>
