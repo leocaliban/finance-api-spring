@@ -34,7 +34,7 @@ public class FinanceExceptionHandler extends ResponseEntityExceptionHandler {
 
 		// Gera duas mensagens, uma para o cliente e uma técnica para o desenvolvedor
 		String mensagemUsuario = messageSource.getMessage("mensagem.invalida", null, LocaleContextHolder.getLocale());
-		String mensagemDesenvolvedor = ex.getCause().toString();
+		String mensagemDesenvolvedor = ex.getCause() != null ? ex.getCause().toString() : ex.toString();
 
 		ErroMessage erro = new ErroMessage(mensagemUsuario, mensagemDesenvolvedor);
 		return handleExceptionInternal(ex, erro, headers, HttpStatus.BAD_REQUEST, request);

@@ -22,6 +22,11 @@ public class PessoaService {
 
 	public Pessoa buscarPorCodigo(Long codigo) {
 		Pessoa pessoa = repository.findOne(codigo);
+		
+		if (pessoa == null) {
+			throw new EmptyResultDataAccessException(1);
+		}
+		
 		return pessoa;
 	}
 	
@@ -31,16 +36,19 @@ public class PessoaService {
 	}
 
 	public Pessoa atualizar(Long codigo, Pessoa pessoa) {
-		Pessoa pessoaSalva = repository.findOne(codigo);
-
-		if (pessoaSalva == null) {
-			throw new EmptyResultDataAccessException(1);
-		}
+		Pessoa pessoaSalva = buscarPorCodigo(codigo);
 
 		// Propriedade do spring que aplica os dados atualizados 'pessoa' na entidade
 		// que foi editada 'pessoaSalva' ignorando o 'codigo'
 		BeanUtils.copyProperties(pessoa, pessoaSalva, "codigo");
 		return repository.save(pessoaSalva);
+	}
+	
+	public void atualizarPropriedadeAtivo(Long codigo, Boolean ativo) {
+		Pessoa pessoaSalva = buscarPorCodigo(codigo);
+		
+		pessoaSalva.setAtivo(ativo);
+		repository.save(pessoaSalva);
 	}
 	
 	public void remover(Long codigo) {
