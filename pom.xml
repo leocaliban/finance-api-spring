@@ -80,6 +80,12 @@
 			<artifactId>spring-security-oauth2</artifactId>
 		</dependency>
 		
+		<!-- Segurança JWT -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-jwt</artifactId>
+		</dependency>
+		
 		
 		
 		<!-- Dependencia externa usada para criar o Metamodel 
