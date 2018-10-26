@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.finance.api.event.RecursoCriadoEvent;
 import com.finance.api.model.Lancamento;
+import com.finance.api.repositories.filter.LancamentoFilter;
 import com.finance.api.services.LancamentoService;
 
 @RestController
@@ -26,25 +27,25 @@ public class LancamentoResource {
 
 	@Autowired
 	private LancamentoService service;
-	
+
 	@Autowired
 	private ApplicationEventPublisher publisher;
 
 	@GetMapping
-	public List<Lancamento> buscarTodos() {
-		return service.buscarTodos();
+	public List<Lancamento> pesquisar(LancamentoFilter filter) {
+		return service.filtrar(filter);
 	}
-	
+
 	@GetMapping("/{codigo}")
-	public ResponseEntity<Lancamento> buscarPorCodigo(@PathVariable Long codigo){
+	public ResponseEntity<Lancamento> buscarPorCodigo(@PathVariable Long codigo) {
 		Lancamento lancamento = service.buscarPorCodigo(codigo);
 		return lancamento != null ? ResponseEntity.ok(lancamento) : ResponseEntity.notFound().build();
 	}
-	
+
 	@PostMapping
-	public ResponseEntity<Lancamento> salvar (@Valid @RequestBody Lancamento lancamento, HttpServletResponse response){
+	public ResponseEntity<Lancamento> salvar(@Valid @RequestBody Lancamento lancamento, HttpServletResponse response) {
 		Lancamento lancamentoSalvo = service.salvar(lancamento);
-		
+
 		publisher.publishEvent(new RecursoCriadoEvent(this, response, lancamentoSalvo.getCodigo()));
 		return ResponseEntity.status(HttpStatus.CREATED).body(lancamentoSalvo);
 	}

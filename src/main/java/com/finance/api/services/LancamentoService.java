@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.finance.api.model.Lancamento;
 import com.finance.api.model.Pessoa;
 import com.finance.api.repositories.LancamentoRepository;
+import com.finance.api.repositories.filter.LancamentoFilter;
 import com.finance.api.services.exceptions.PessoaInexistenteOuInativaException;
 
 @Service
@@ -20,8 +21,13 @@ public class LancamentoService {
 	@Autowired
 	private LancamentoRepository repository;
 
-	public List<Lancamento> buscarTodos() {
+	public List<Lancamento> pesquisar() {
 		return repository.findAll();
+	}
+
+	public List<Lancamento> filtrar(LancamentoFilter filter) {
+		return repository.filtrar(filter);
+
 	}
 
 	public Lancamento buscarPorCodigo(Long codigo) {
