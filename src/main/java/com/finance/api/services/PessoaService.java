@@ -19,6 +19,12 @@ public class PessoaService {
 	public List<Pessoa> buscarTodos() {
 		return repository.findAll();
 	}
+	
+	public Pessoa buscarPorCodigoParaLancamento(Long codigo) {
+		Pessoa pessoa = repository.findOne(codigo);		
+		return pessoa;
+	}
+	
 
 	public Pessoa buscarPorCodigo(Long codigo) {
 		Pessoa pessoa = repository.findOne(codigo);

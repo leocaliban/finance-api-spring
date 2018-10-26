@@ -7,10 +7,15 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.finance.api.model.Lancamento;
+import com.finance.api.model.Pessoa;
 import com.finance.api.repositories.LancamentoRepository;
+import com.finance.api.services.exceptions.PessoaInexistenteOuInativaException;
 
 @Service
 public class LancamentoService {
+
+	@Autowired
+	private PessoaService pessoaService;
 
 	@Autowired
 	private LancamentoRepository repository;
@@ -27,8 +32,13 @@ public class LancamentoService {
 		}
 		return lancamento;
 	}
-	
+
 	public Lancamento salvar(Lancamento lancamento) {
+		Pessoa pessoa = pessoaService.buscarPorCodigoParaLancamento(lancamento.getPessoa().getCodigo());
+		if (pessoa == null || pessoa.isInativo()) {
+			throw new PessoaInexistenteOuInativaException();
+		}
+
 		Lancamento lancamentoSalvo = repository.save(lancamento);
 		return lancamentoSalvo;
 	}
