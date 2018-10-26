@@ -11,6 +11,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
 import com.finance.api.model.Lancamento;
@@ -23,7 +26,7 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 	private EntityManager manager;
 
 	@Override
-	public List<Lancamento> filtrar(LancamentoFilter filter) {
+	public Page<Lancamento> filtrar(LancamentoFilter filter, Pageable pageable) {
 		CriteriaBuilder builder = manager.getCriteriaBuilder();
 		CriteriaQuery<Lancamento> criteria = builder.createQuery(Lancamento.class);
 
@@ -34,7 +37,9 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 
 		TypedQuery<Lancamento> query = manager.createQuery(criteria);
 
-		return query.getResultList();
+		adicionarRestricoesDePaginacao(query, pageable);
+
+		return new PageImpl<>(query.getResultList(), pageable, total(filter));
 	}
 
 	/**
@@ -63,6 +68,29 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
 					builder.lessThanOrEqualTo(root.get(Lancamento_.dataVencimento), filter.getDataVencimentoAte()));
 		}
 		return predicates.toArray(new Predicate[predicates.size()]);
+	}
+
+	private void adicionarRestricoesDePaginacao(TypedQuery<Lancamento> query, Pageable pageable) {
+		int paginaAtual = pageable.getPageNumber();
+		int totalRegistroPorPagina = pageable.getPageSize();
+		int primeiroRegistroDaPagina = paginaAtual * totalRegistroPorPagina;
+
+		query.setFirstResult(primeiroRegistroDaPagina);
+		query.setMaxResults(totalRegistroPorPagina);
+	}
+
+	private Long total(LancamentoFilter filter) {
+		CriteriaBuilder builder = manager.getCriteriaBuilder();
+		CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
+
+		Root<Lancamento> root = criteria.from(Lancamento.class); // onde está sendo feito a pesquisa
+
+		Predicate[] predicates = criarRestricoes(filter, builder, root);
+		criteria.where(predicates);
+
+		// count - select * from lancamento
+		criteria.select(builder.count(root));
+		return manager.createQuery(criteria).getSingleResult();
 	}
 
 }

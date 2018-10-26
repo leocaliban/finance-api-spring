@@ -1,9 +1,9 @@
 package com.finance.api.services;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.finance.api.model.Lancamento;
@@ -21,12 +21,8 @@ public class LancamentoService {
 	@Autowired
 	private LancamentoRepository repository;
 
-	public List<Lancamento> pesquisar() {
-		return repository.findAll();
-	}
-
-	public List<Lancamento> filtrar(LancamentoFilter filter) {
-		return repository.filtrar(filter);
+	public Page<Lancamento> filtrar(LancamentoFilter filter, Pageable pageable) {
+		return repository.filtrar(filter, pageable);
 
 	}
 
@@ -47,5 +43,9 @@ public class LancamentoService {
 
 		Lancamento lancamentoSalvo = repository.save(lancamento);
 		return lancamentoSalvo;
+	}
+	
+	public void remover(Long codigo) {
+		repository.delete(codigo);
 	}
 }
