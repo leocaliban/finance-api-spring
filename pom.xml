@@ -86,6 +86,13 @@
 			<artifactId>spring-security-jwt</artifactId>
 		</dependency>
 		
+		<!-- FinanceApiProperty -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+		
 		
 		
 		<!-- Dependencia externa usada para criar o Metamodel 
