@@ -10,6 +10,7 @@ import com.finance.api.model.Lancamento;
 import com.finance.api.model.Pessoa;
 import com.finance.api.repositories.LancamentoRepository;
 import com.finance.api.repositories.filter.LancamentoFilter;
+import com.finance.api.repositories.projection.ResumoLancamento;
 import com.finance.api.services.exceptions.PessoaInexistenteOuInativaException;
 
 @Service
@@ -35,6 +36,10 @@ public class LancamentoService {
 		return lancamento;
 	}
 
+	public Page<ResumoLancamento> resumirListagem(LancamentoFilter filter, Pageable pageable) {
+		return repository.resumir(filter, pageable);
+	}
+
 	public Lancamento salvar(Lancamento lancamento) {
 		Pessoa pessoa = pessoaService.buscarPorCodigoParaLancamento(lancamento.getPessoa().getCodigo());
 		if (pessoa == null || pessoa.isInativo()) {
@@ -44,7 +49,7 @@ public class LancamentoService {
 		Lancamento lancamentoSalvo = repository.save(lancamento);
 		return lancamentoSalvo;
 	}
-	
+
 	public void remover(Long codigo) {
 		repository.delete(codigo);
 	}

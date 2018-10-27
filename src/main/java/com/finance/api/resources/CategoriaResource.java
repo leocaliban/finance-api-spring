@@ -33,14 +33,14 @@ public class CategoriaResource {
 	@Autowired
 	private ApplicationEventPublisher publisher;
 
-	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') AND #oauth2.hasScope('read')")
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')")
 	@GetMapping
 	public List<Categoria> buscarTodos() {
 		return service.buscarTodos();
 
 	}
 
-	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') AND #oauth2.hasScope('read')")
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')")
 	@GetMapping("/{codigo}")
 	public ResponseEntity<Categoria> buscarPorCodigo(@PathVariable Long codigo) {
 		Categoria categoriaRecuperada = service.buscarPorCodigo(codigo);
@@ -48,7 +48,7 @@ public class CategoriaResource {
 		return categoriaRecuperada != null ? ResponseEntity.ok(categoriaRecuperada) : ResponseEntity.notFound().build();
 	}
 
-	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') AND #oauth2.hasScope('write')")
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and #oauth2.hasScope('write')")
 	@PostMapping
 	public ResponseEntity<Categoria> salvar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {
 		Categoria categoriaSalva = service.salvar(categoria);

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.finance.api.event.RecursoCriadoEvent;
 import com.finance.api.model.Lancamento;
 import com.finance.api.repositories.filter.LancamentoFilter;
+import com.finance.api.repositories.projection.ResumoLancamento;
 import com.finance.api.services.LancamentoService;
 
 @RestController
@@ -34,20 +35,26 @@ public class LancamentoResource {
 	@Autowired
 	private ApplicationEventPublisher publisher;
 
-	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') AND #oauth2.hasScope('read')")
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and #oauth2.hasScope('read')")
 	@GetMapping
 	public Page<Lancamento> pesquisar(LancamentoFilter filter, Pageable pageable) {
 		return service.filtrar(filter, pageable);
 	}
 
-	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') AND #oauth2.hasScope('read')")
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and #oauth2.hasScope('read')")
 	@GetMapping("/{codigo}")
 	public ResponseEntity<Lancamento> buscarPorCodigo(@PathVariable Long codigo) {
 		Lancamento lancamento = service.buscarPorCodigo(codigo);
 		return lancamento != null ? ResponseEntity.ok(lancamento) : ResponseEntity.notFound().build();
 	}
 
-	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') AND #oauth2.hasScope('write')")
+	@GetMapping(params = "resumo")
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and #oauth2.hasScope('read')")
+	public Page<ResumoLancamento> resumir(LancamentoFilter filter, Pageable pageable) {
+		return service.resumirListagem(filter, pageable);
+	}
+
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and #oauth2.hasScope('write')")
 	@PostMapping
 	public ResponseEntity<Lancamento> salvar(@Valid @RequestBody Lancamento lancamento, HttpServletResponse response) {
 		Lancamento lancamentoSalvo = service.salvar(lancamento);
@@ -56,7 +63,7 @@ public class LancamentoResource {
 		return ResponseEntity.status(HttpStatus.CREATED).body(lancamentoSalvo);
 	}
 
-	@PreAuthorize("hasAuthority('ROLE_REMOVER_LANCAMENTO') AND #oauth2.hasScope('write')")
+	@PreAuthorize("hasAuthority('ROLE_REMOVER_LANCAMENTO') and #oauth2.hasScope('write')")
 	@DeleteMapping("/{codigo}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable Long codigo) {
