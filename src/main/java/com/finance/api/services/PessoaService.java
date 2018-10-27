@@ -1,10 +1,10 @@
 package com.finance.api.services;
 
-import java.util.List;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.finance.api.model.Pessoa;
@@ -16,8 +16,8 @@ public class PessoaService {
 	@Autowired
 	private PessoaRepository repository;
 
-	public List<Pessoa> buscarTodos() {
-		return repository.findAll();
+	public Page<Pessoa> buscarTodos(String nome, Pageable pageable) {
+		return repository.findByNomeContaining(nome, pageable);
 	}
 	
 	public Pessoa buscarPorCodigoParaLancamento(Long codigo) {
