@@ -1,5 +1,6 @@
 package com.finance.api.services;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -50,7 +51,26 @@ public class LancamentoService {
 		return lancamentoSalvo;
 	}
 
+	public Lancamento atualizar(Long codigo, Lancamento lancamento) {
+		Lancamento lancamentoSalvo = buscarPorCodigo(codigo);
+		if (!lancamento.getPessoa().equals(lancamentoSalvo.getPessoa())) {
+			validarPessoa(lancamento);
+		}
+		BeanUtils.copyProperties(lancamento, lancamentoSalvo, "codigo");
+		return repository.save(lancamentoSalvo);
+	}
+
 	public void remover(Long codigo) {
 		repository.delete(codigo);
+	}
+
+	private void validarPessoa(Lancamento lancamento) {
+		Pessoa pessoa = null;
+		if (lancamento.getPessoa().getCodigo() != null) {
+			pessoa = pessoaService.buscarPorCodigoParaLancamento(lancamento.getPessoa().getCodigo());
+		}
+		if (pessoa == null || pessoa.isInativo()) {
+			throw new PessoaInexistenteOuInativaException();
+		}
 	}
 }
