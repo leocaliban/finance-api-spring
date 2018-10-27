@@ -21,29 +21,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.finance.api.event.RecursoCriadoEvent;
 import com.finance.api.model.Categoria;
-import com.finance.api.repositories.CategoriaRepository;
+import com.finance.api.services.CategoriaService;
 
 @RestController
 @RequestMapping("/categorias")
 public class CategoriaResource {
 
 	@Autowired
-	private CategoriaRepository repository;
+	private CategoriaService service;
 
 	@Autowired
 	private ApplicationEventPublisher publisher;
 
 	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') AND #oauth2.hasScope('read')")
 	@GetMapping
-	public List<Categoria> listar() {
-		return repository.findAll();
+	public List<Categoria> buscarTodos() {
+		return service.buscarTodos();
 
 	}
 
 	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') AND #oauth2.hasScope('read')")
 	@GetMapping("/{codigo}")
 	public ResponseEntity<Categoria> buscarPorCodigo(@PathVariable Long codigo) {
-		Categoria categoriaRecuperada = repository.findOne(codigo);
+		Categoria categoriaRecuperada = service.buscarPorCodigo(codigo);
 
 		return categoriaRecuperada != null ? ResponseEntity.ok(categoriaRecuperada) : ResponseEntity.notFound().build();
 	}
@@ -51,7 +51,7 @@ public class CategoriaResource {
 	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') AND #oauth2.hasScope('write')")
 	@PostMapping
 	public ResponseEntity<Categoria> salvar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {
-		Categoria categoriaSalva = repository.save(categoria);
+		Categoria categoriaSalva = service.salvar(categoria);
 
 		publisher.publishEvent(new RecursoCriadoEvent(this, response, categoriaSalva.getCodigo()));
 
@@ -61,6 +61,6 @@ public class CategoriaResource {
 	@DeleteMapping("/{codigo}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable Long codigo) {
-		repository.delete(codigo);
+		service.remover(codigo);
 	}
 }
